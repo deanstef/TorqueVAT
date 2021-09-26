@@ -1,0 +1,194 @@
+#pragma version 3
+// This contract account allows a Tourist to spend her VAT-Coins by sending them to a Merchant
+// This contract account allows the corresponding Retailer to export the VAT of previous payment into an escrow
+// account (i.e., Tourist Escrow)
+// Actors:
+//  1. The Tourist: Authorised user that whants to buy VAT-free goods to authorised merchants
+//  2. The Merchant: Retailer registered as VAT-Free merchant (owns the Retailer Token)
+//  3. Tourist VAT Escrow Account: Escrow account that holds all the VAT paid by the Tourist.
+// Patrameters:
+//  - VAR_TMPL_TOURIST_TOKENID: Id of the Tourist Token - ASA
+//  - VAR_TMPL_RETAILER_TOKENID: Id of the VAT-free Retailer Token - ASA
+//  - VAR_TMPL_ASAAPPID: Id of the State Observer Statefull Application
+//  - VAR_TMPL_VAT_THRESHOLD: National threshold for VAT-free transactions
+//  - VAR_TMPL_VATVAL: National VAT valure in percentage - e.g. 20%
+// This contract checks (i) The Payment AT triggered by the Tourist, and (ii) the re-payment transaction triggered by
+// the Customs.
+//  (i) Atomic Transfer composed by 2 AppCall txs and 2 AssetRevoke txns:
+//    1) AppCall to the ASA State Observer Statefull application (VAR_TMPL_ASAAPPID), with arg0:"AsaAmountEq", arg1:"int:1"
+//       and foreign asset VAR_TMPL_TOURIST_TOKENID - This AppCall asserts that the Tourist owns the Tourist Token;
+//    2) AppCall to the ASA State Observer Statefull application (VAR_TMPL_ASAAPPID), with arg0:"AsaAmountEq", arg1:"int:1"
+//       and foreign asset VAR_TMPL_RETAILER_TOKENID - This AppCall asserts that the Merchant owns the Retailer Token;
+//    3) AssetRevoke txns. Amount of VAT-Free Coins greater than VAR_TMPL_VAT_THRESHOLD moved from the Tourist to the
+//       Merchant account;
+//    4) AssetRevoke txns. Amount of VAT-Free Coins equivalent to the VAR_TMPL_VATVAL of the amount of txn 3) moved
+//       from the Tourist to the Tourist VAT Escrow Account;
+//  (ii) Asset Revoke transaction from Escrow to Tourist or Merchant
+
+// TEAL Conditions
+global GroupSize // AT with 4 txns
+int 4
+==
+bnz branch_payment
+global GroupSize
+int 1
+==
+bnz branch_refund
+int 0
+return
+
+branch_refund:
+txn TypeEnum
+int axfer
+==
+// Add check on VAT COIN ID 28244699
+// Add check AssetSender == Tourist Escrow with a variable --> Future work
+// We could check the AssetReceiver with a variable --> Future work
+return
+
+branch_payment:
+// FIRST TX CHECKS
+gtxn 0 TypeEnum // 1st txn is an application call to State Observer stateful ASC1
+int appl
+==
+gtxn 0 ApplicationID
+int 24248443 // AppCall to ASA State Observer App
+==
+&&
+gtxn 0 ApplicationArgs 0
+byte "AsaAmountEq" // AppCall to ASA State Observer is of type AsaAmountEq
+==
+&&
+gtxn 0 ApplicationArgs 1
+btoi
+int 1 // AppCall to ASA asserts that the user owns 1 ASA
+==
+&&
+gtxn 0 Assets 0
+int 28244470 // Tourist Token specified in the asset array
+==
+&&
+gtxn 0 RekeyTo
+global ZeroAddress
+==
+&&
+gtxn 0 Fee
+int 1000
+<=
+&&
+gtxn 0 CloseRemainderTo
+global ZeroAddress
+==
+&&
+
+// SECOND TXN CHECKS
+gtxn 1 TypeEnum // 2nd txn is an AppCall
+int appl
+==
+&&
+gtxn 1 ApplicationID
+int 24248443 // AppCall to ASA State Observer App
+==
+&&
+gtxn 1 ApplicationArgs 0
+byte "AsaAmountEq" // AppCall to ASA State Observer is of type AsaAmountEq
+==
+&&
+gtxn 1 ApplicationArgs 1
+btoi
+int 1 // AppCall to ASA asserts that the user owns 1 ASA
+==
+&&
+gtxn 1 Assets 0
+int 28244597 // VAT-Free Retailer Token specified in the asset array
+==
+&&
+gtxn 1 RekeyTo
+global ZeroAddress
+==
+&&
+gtxn 1 Fee
+int 1000
+<=
+&&
+gtxn 1 CloseRemainderTo
+global ZeroAddress
+==
+&&
+// Check whether the sender of 1st and 2nd txns is this VAT Contract Account (WHY??)
+gtxn 1 Sender
+gtxn 0 Sender
+==
+&&
+// THIRD TX CHECKS
+gtxn 2 TypeEnum // 3rd txn is an assetRevoke txn, clawback=this contract, assetsender=tourist, assetreceiver=retailer
+int axfer
+==
+&&
+gtxn 2 AssetAmount
+int 175 // Check whether the transferred amount of the tourist is above the VAT Threshold
+>=
+&&
+gtxn 2 AssetSender
+gtxn 0 Accounts 1 // Sender of the AssetRevoke is the Tourist
+==
+&&
+gtxn 2 AssetReceiver
+gtxn 1 Accounts 1 // Receiver of the AssetRevoke is the Merchant
+==
+&&
+gtxn 2 AssetCloseTo
+global ZeroAddress
+==
+&&
+gtxn 2 RekeyTo
+global ZeroAddress
+==
+&&
+gtxn 2 Fee
+int 1000
+<=
+&&
+// Add check on VAT COIN ID
+// FOURTH TX CHECKS
+// Check whether the retailer put the 20% of received amount inside the escrow
+gtxn 3 TypeEnum // 4th txn is an assetRevoke txn, clawback=this contract, assetsender=merchant, assetreceiver=touristescrow
+int axfer
+==
+&&
+gtxn 2 AssetAmount
+int 20
+*
+int 100
+/
+gtxn 3 AssetAmount
+==
+&&
+gtxn 3 AssetSender
+gtxn 1 Accounts 1 // Sender of the AssetRevoke is the Merchant
+==
+&&
+// It would be nice to check that the receiver of the AssetRevoke is the Tourist Escrow
+//gtxn 2 AssetReceiver
+//addr VAR_TMPL_TOURIST_ESCROW
+//==
+//&&
+gtxn 3 AssetCloseTo
+global ZeroAddress
+==
+&&
+gtxn 3 RekeyTo
+global ZeroAddress
+==
+&&
+gtxn 3 Fee
+int 1000
+<=
+&&
+// Check whether the sender of the 3rd and 4th txns is this VAT Contract Account, i.e. the clawback account of VAT ASA (WHY?)
+gtxn 2 Sender
+gtxn 3 Sender
+==
+&&
+// Add check on VAT COIN ID
+return

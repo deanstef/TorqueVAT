@@ -1,0 +1,43 @@
+{
+  "name": "vatrefoundforcrossbordertx",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clear": "node ./utils/clear.js",
+    "create_accounts": "node ./utils/create_accounts.js",
+    "reset": "npm run clear && npm run create_accounts",
+    "server": "node ./server/index.js",
+    "init_db_testnet": "node ./utils/init_db_testnet.js",
+    "clear_db": "node ./utils/clear_db.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "algosdk": "^1.11.1",
+    "bcrypt-nodejs": "0.0.3",
+    "cluster": "^0.7.7",
+    "compression": "^1.7.4",
+    "connect-flash": "^0.1.1",
+    "connect-mongo": "^4.5.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "cross-blob": "^3.0.0",
+    "csurf": "^1.11.0",
+    "dotenv": "^10.0.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "express-session": "^1.17.2",
+    "express-validator": "^6.12.1",
+    "faker": "^5.5.3",
+    "filereader": "^0.10.3",
+    "helmet": "^4.6.0",
+    "mongoose": "^6.0.3",
+    "morgan": "^1.10.0",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "path": "^0.12.7",
+    "shelljs": "^0.8.4",
+    "whatwg-url": "^9.1.0"
+  }
+}

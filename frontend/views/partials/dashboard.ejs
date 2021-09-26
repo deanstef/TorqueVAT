@@ -1,0 +1,246 @@
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12"> 
+                <% if( locals.user.role == "AUTHORITY" || locals.user.role == "POLICE" ) { %>
+                    <h5 class="mb-3">Create Tokens</h5>
+                    <div class="row">
+
+                        <% if( locals.user.role == "AUTHORITY" ) { %>
+                            <form action="/algo/create-token/merchant" method="POST" class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <input class="form-control btn-primary" type="submit" value="Create merchant id token">
+                                </div>
+                            </form>
+                            <form action="/algo/create-token/vat" method="POST" class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <input class="form-control btn-primary" type="submit" value="Create VAT Coin">
+                                </div>
+                            </form>
+                        <% } %>
+                        <% if( locals.user.role == "POLICE" ) { %>
+                            <form action="/algo/create-token/id" method="POST" class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <input class="form-control btn-primary" type="submit" value="Create tourist id token">
+                                </div>
+                            </form>
+                        <% } %>
+                    </div>
+                <% } %>
+                
+
+                
+                <% if( locals.user.role == "AUTHORITY" || locals.user.role == "POLICE" || locals.user.role == "CUSTOMS" ) { 
+                    let actionPath = "/algo/clawback"
+                    if( locals.user.role == "CUSTOMS" ) actionPath = "/algo/pay_user_vat"%>
+
+          
+
+                <form class="mt-5 row" action="<%=actionPath%>" method="POST" id="application-form">
+                    <h5 > Pending Applications </h5>
+                    <%
+                        let message;
+                        let button;
+                        let select_label = "Select the User Target";
+                        if( locals.user.role == "POLICE" ){
+                            message = "Transfers identy tokens to toursits"; // police
+                            button = "Grant Token"; // police
+                        } else if( locals.user.role == "AUTHORITY" ){
+                            message = "Transfer identity tokens to merchants or vat coins"; // authority
+                            button = "Authorize"; // authority
+                        } else if( locals.user.role == "CUSTOMS" ){
+                            message = "List all the vat coin transactions for a tourist and authorize the vat refound according to local conditions. If the condition is not satisfied for a transaction, the relative vat will be refounded to the merchatn ( red highlighted ).";
+                            button = "Refound Vat"; // customs
+                            select_label="Select the Tourist";
+                        }
+                    %>
+                    <small class="mb-3" > <%= message %> </small>
+
+                    <div class="form-group mb-1 col-md-12">
+                        <label class="form-label" for="toAddress"><%=select_label%></label>
+                        <select class="form-control <%= locals.user.role == "CUSTOMS" ? "preview": "" %>" 
+                        name="toAddress" 
+                        id="toAddress">
+                            <% for( let application of locals.applications ) { 
+                                if( 
+                                    locals.user.role == "AUTHORITY" && 
+                                    !( application.tokenId == process.env.ASSET_MERCHANT  || application.tokenId == process.env.ASSET_VAT )
+                                ) { continue }
+                                else if ( 
+                                    locals.user.role == "POLICE" && 
+                                    !( application.tokenId == process.env.ASSET_TOURIST )
+                                ) { continue }
+                                else if (
+                                    locals.user.role == "CUSTOMS" &&
+                                    application.tokenId 
+                                )  { continue }
+                                
+                                %>
+                                <option value="<%=application.owner.algo_address%>" 
+                                    data-amount="<%=application.amount%>"
+                                    data-id="<%=application._id%>"
+                                    data-token-id="<%=application.tokenId%>" >
+                                    <%=application.owner.role%>: <%=application.owner.name%>
+                                    <%= application.amount ? ", Amount: " + application.amount : "" %>
+                                </option>
+                            <% } %>
+                        </select>
+                    </div>
+                    
+
+                    <input type="hidden" class="form-control"  name="amount" value="1">
+                    <input type="hidden" name="note" value="some kind of hash">
+                    <input type="hidden" name="fromAddress" value="<%=locals.user.algo_address%>">
+                    <input type="hidden" name="applicationId" value="">
+                    <input type="hidden" name="tokenId" value="" >
+
+                    <div class="form-group mb-3 col-md-12">
+                        <% if( locals.user.role == "CUSTOMS" ) { %> 
+                            <div class="form-control btn-primary  mb-3 preview text-center" type="button" >Preview vat coin transactions</div>
+                        <% } %> 
+                        <input class="form-control btn-primary submit" type="submit" value="<%=button%>">
+                    </div>
+                </form>
+                <% } %>
+
+                <% if( locals.user.role == "USER" || locals.user.role == "MERCHANT" ) { %>
+                <h5 class="mb-3 mt-5">Applications</h5>
+                <div class="row">
+
+                    <% if( locals.user.role == "MERCHANT" || locals.user.role == "USER") { %>
+                        <form action="/algo/opt-in" method="POST" class="col-md-12">
+                            <div class="form-group mb-3">
+                                <% for( let asset of locals.assets ) { %>
+                                    <% if( asset.type == "ASSET_VAT" ) { %>
+                                        <input type="hidden" name="tokenId" value="<%=asset.id%>">
+                                    <% } %>
+                                <% } %>
+                                <input class="form-control btn-primary" type="submit" value="Unlock your wallet to allow VAT-Free Coin Transaction">
+                            </div>
+                        </form>
+                    <% } %>
+
+                    <% if( locals.user.role == "USER" ) { %>
+                        
+                        <% if( !locals.verified ) { %>
+                        <form action="/algo/opt-in" method="POST" class="col-md-12">
+                            <div class="form-group mb-3">
+                                <% for( let asset of locals.assets ) { %>
+                                    <% if( asset.type == "ASSET_TOURIST" ) { %>
+                                        <input type="hidden" name="tokenId" value="<%=asset.id%>">
+                                    <% } %>
+                                <% } %>
+                                <input class="form-control btn-primary" type="submit" value="Become a VAT-Free Privileged Tourist ">
+                            </div>
+                        </form>
+                        <% } %>
+                        
+                        <form class="row" action="/apply/id" method="POST" class="col-md-12">
+                            <div class="form-group mb-3 col-md-6">
+                                <select name="amount" id="" class="form-control">
+                                    <option value="0" selected>Amount</option>
+                                    <option value="5">5</option>
+                                    <option value="500">500</option>
+                                    <option value="1000">1000</option>
+                                    <option value="1500">1500</option>
+                                    <option value="2000">2000</option>
+                                </select>
+                            </div>
+                            <% for( let asset of locals.assets ) { %>
+                                <% if( asset.type == "ASSET_VAT" ) { %>
+                                    <input type="hidden" name="tokenId" value="<%=asset.id%>">
+                                <% } %>
+                            <% } %>
+                            <div class="form-group mb-3 col-md-6">
+                                <input class="form-control btn-primary" type="submit" value="Buy VAT-Free Coin">
+                            </div>
+                        </form>
+                        
+                    <% } %>
+
+                    <% if( locals.user.role == "MERCHANT" ) { %>
+                        <form action="/algo/opt-in" method="POST" class="col-md-12">
+                            <div class="form-group mb-3">
+                                <% for( let asset of locals.assets ) { %>
+                                    <% if( asset.type == "ASSET_MERCHANT" ) { %>
+                                        <input type="hidden" name="tokenId" value="<%=asset.id%>">
+                                    <% } %>
+                                <% } %>
+                                <input class="form-control btn-primary" type="submit" value="Become a VAT-Free Retailer">
+                            </div>
+                        </form>
+                    <% } %>
+
+                </div>
+                <% } %>
+
+                <% if( locals.user.role == "USER" ) { %>
+                <h5 class="mb-3 mt-5">Payment</h5>
+                <div class="row">
+                    <form class="row" action="/algo/pay" method="POST" class="col-md-12">
+                        <div class="form-group mb-3 col-md-4">
+                            <label class="form-label" >Pay Amount</label>
+                            <input class="form-control" type="number" name="amount" placeholder="Amount" step="0.01" min="150">
+                        </div>
+                        <div class="form-group mb-3 col-md-4">
+                            <label class="form-label" for="toAddress">Select the reciver user</label>
+                            <select class="form-control" name="toAddress" id="toAddress">
+                                <% for( let list_user of locals.users ) { %>
+                                    <% if( list_user.role == "MERCHANT" ) { %>
+                                        <option value="<%=list_user.algo_address%>"><%=list_user.name%>, Role: <%=list_user.role%></option>
+                                    <% } %>
+                                <% } %>
+                            </select>
+                        </div>
+                        <% for( let asset of locals.assets ) { %>
+                            <% if( asset.type == "ASSET_VAT" ) { %>
+                                <input type="hidden" name="tokenId" value="<%=asset.id%>">
+                            <% } %>
+                        <% } %>
+                        
+                        <input type="hidden" name="note" value="some kind of hash">
+
+                        <div class="form-group mb-3 col-md-4">
+                            <label class="form-label" for="toAddress"></br></label>
+                            <input class="form-control btn-primary" type="submit" value="Pay Merchant">
+                        </div>
+                    </form>
+                </div>
+                <h5 class="mb-3 mt-5">End your travel</h5>
+               
+                <div class="row">
+                    <div class="col-lg-6">
+                        <p>Submit a request to collect your payed vat percentage amount</p>
+                    </div>
+                    <div class="col-lg-6">
+                        <form action="/apply/end" method="POST" class="col-md-12">
+                            <input class="form-control btn-primary" type="submit" value="End your journey">
+                        </form>
+                    </div>
+                    
+                </div>
+                <% } %>
+
+                
+                <% if( locals.user.role == "CUSTOMS" ) { %>
+                <table class="table table-striped refound-preview-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Transaction</th>
+                            <th scope="col">Sender</th>
+                            <th scope="col">Reciver</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Refounding</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <% } %>
+                
+
+                
+            </div>
+        </div>
+    </div>
+</section>

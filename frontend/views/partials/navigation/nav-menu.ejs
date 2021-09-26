@@ -1,0 +1,105 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-5">
+  <div class="container">
+    <a class="navbar-brand" href="#"></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" href="/">Join the travelling innovation</a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<nav class="d-flex flex-column flex-shrink-0 p-3 bg-light sidebar" style="width: 280px;">
+  <a href="/" class="d-flex align-items-center me-md-auto link-dark text-decoration-none">
+    <span class="fs-4">Vat Free App</span>
+  </a>
+ 
+  <ul class="nav nav-pills flex-column mb-auto mt-5">
+    <li class="nav-item">
+      <a href="/" class="nav-link active" aria-current="page">
+        Home
+      </a>
+    </li>
+    <li>
+      <a href="/dashboard" class="nav-link link-dark">
+        
+        Dashboard
+      </a>
+    </li>
+    
+    
+    <% if( !locals.user ) { %>
+      <li>
+        <a href="/auth/login" class="nav-link link-dark">
+          Login
+        </a>
+      </li>
+      <li>
+        <a href="/auth/signup" class="nav-link link-dark">
+          User Signup
+        </a>
+      </li>
+      <li>
+        <a href="/auth/signup/merchant" class="nav-link link-dark">
+          Become a Vat Free Merchant
+        </a>
+      </li>
+    <% } else { %>
+      <li>
+        <a href="/auth/logout" class="nav-link link-dark">
+          Logout
+        </a>
+      </li>
+      <% if(locals.verified) { %>
+        <li >
+          <a class="nav-link approved" href="#"><strong>Approved :</strong> <img src="/img/check.png" alt="approved"></a>
+        </li>
+      <% } %>
+
+      <% if ( locals.user.role == "AUTHORITY" || locals.user.role == "USER" || locals.user.role == "MERCHANT"  ) { %> 
+        <li >
+          <a class="nav-link" href="#"><strong>VAT COIN BALANCE :</strong> <%= locals.vat_token_balance ? locals.vat_token_balance : 0 %></a>
+        </li>
+      <% } %> 
+      <% if ( locals.user.role == "USER" ) { %> 
+        <li >
+          <a class="nav-link" href="#"><strong>BALANCE VAT ESCROW :</strong> <%=vat_token_balance_escrow%></a>
+        </li>
+      <% } %> 
+    <% } %>
+
+
+    
+
+
+  </ul>
+  <hr>
+  <div class="dropdown">
+    <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+      <%
+          let image = '/img/enter.png';
+          if( !locals.user ) {}
+          else if( locals.user.role == "USER" ) { image = '/img/user.png' }
+          else if ( locals.user.role == "MERCHANT" ) { image = '/img/store.png' }
+          else if ( locals.user.role == "AUTHORITY" ) { image = '/img/authority.png' }
+          else if ( locals.user.role == "POLICE" ) { image = '/img/police.png' }
+          else if ( locals.user.role == "CUSTOMS" ) { image = '/img/customs.png' }
+          else {}
+      %>
+      <img src="<%=image%>" alt="" width="32" height="32" class="rounded-circle me-2">
+      <strong> <%= locals.user ? locals.user.role : "" %> | Settings</strong>
+    </a>
+    <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
+      <li><form action="/algo/clear-escrow" method="POST"><button class="btn btn-primary m-auto d-block">Clear Escrow</button></form></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" href="#">Sign out</a></li>
+    </ul>
+  </div>
+</nav>
+

@@ -1,0 +1,21 @@
+<section id="banner-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="banner">
+                    <%
+                        let image = '/img/enter.png';
+                        if( !locals.user ) {}
+                        else if( locals.user.role == "USER" ) { image = '/img/user.png' }
+                        else if ( locals.user.role == "MERCHANT" ) { image = '/img/store.png' }
+                        else if ( locals.user.role == "AUTHORITY" ) { image = '/img/authority.png' }
+                        else if ( locals.user.role == "POLICE" ) { image = '/img/police.png' }
+                        else if ( locals.user.role == "CUSTOMS" ) { image = '/img/customs.png' }
+                        else {}
+                    %>
+                    <img src="<%=image%>" alt="user image">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

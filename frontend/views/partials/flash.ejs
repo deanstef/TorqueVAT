@@ -1,0 +1,35 @@
+<section class="flash">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <% 
+                function capitalize(s) { return s[0].toUpperCase() + s.slice(1); }
+                let errorsObj = [];
+                let successObj = [];
+                if( success && success.length ) {
+                    if (typeof success == "Object") successObj = success;
+                    else successObj = JSON.parse(success);
+                }
+                if( errors && errors.length ){
+                    if (typeof errors == "Object") errorsObj = errors;
+                    else errorsObj = JSON.parse(errors);
+                } 
+                %>
+                <% if( errorsObj.length ) { %>
+                    <div class="alert alert-danger">
+                    <% for( let error of errorsObj) { %>
+                        <p><strong><%=capitalize(error.param.split("-").join(" "))%>: </strong><%=error.msg%></p>
+                    <% } %>
+                    </div>
+                <% } %>
+                <% if( successObj.length) { %>
+                    <div class="alert alert-success">
+                    <% for( let message of successObj) { %>
+                        <p><strong><%=capitalize(message.param.split("-").join(" "))%>: </strong><%=message.msg%></p>
+                    <% } %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,8 @@
+<%-include('./partials/head') %>
+    <main >
+        <%-include('./partials/navigation/nav-menu') %>
+        <%-include('./partials/flash') %>
+        <h1><%= error.status %>: <%= message %></h1>
+        <pre><%= error.stack %></pre>
+    </main>
+<%-include('./partials/footer') %>

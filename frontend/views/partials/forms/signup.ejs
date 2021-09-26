@@ -1,0 +1,66 @@
+<section id="signup">
+    <div class="container">
+        
+
+        <div class="signup-form">
+            <div class="row">
+                
+                <div class=" col-md-12 ">   
+                    <h2>Sign Up</h2>
+                    <form class="mt-5 row" action="/auth/signup" method="POST">
+                        <div class="form-group mb-3 col-md-6">
+                            <label class="form-label" for="tokenId">Name</label>
+                            <input type="text" class="form-control" name="name" placeholder="Name" required>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label class="form-label" for="tokenId">Surname</label>
+                            <input type="text" class="form-control" name="surname" placeholder="Surname" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label" for="tokenId">Email</label>
+                            <input type="email" class="form-control" name="email" placeholder="Email" required>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label class="form-label" for="tokenId">Password</label>
+                            <input type="password" class="form-control" name="password" placeholder="Password" required>
+                        </div>
+                        <div class="form-group mb-3 col-md-6">
+                            <label class="form-label" for="tokenId">Confirm Password</label>
+                            <input type="password" class="form-control" name="password_confirm" placeholder="Confirm Password" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <p class="mt-2"> An algorand wallet is going to be created for you upon submission. If you want to use your personal wallet import it by clicking the button <strong>import wallet</strong> aside. </p>
+                        </div>
+                        <div class="col-md-6">
+                            <a class="btn btn-primary mb-3 " data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                Import wallet
+                            </a>
+                        </div>
+                        
+                        <div class="collapse"  id="collapseExample">
+                            <div class="card card-body mb-3">
+                                <div class="form-group col-md-12 mb-3">
+                                    <label class="form-label" for="tokenId">Your Algorand Address</label>
+                                    <input type="text" class="form-control" name="algo_address" placeholder="Algorand Address" >
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label class="form-label" for="tokenId">Your Algorand Mnemonic</label>
+                                    <input type="text" class="form-control" name="algo_mnemonic" placeholder="Algorand Mnemonic" >
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        
+                        <div class="form-group mb-3">
+                            <input type="submit" class="btn btn-primary form-control" >
+                        </div>
+                    </form>
+
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</section>

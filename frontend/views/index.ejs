@@ -1,0 +1,23 @@
+<%-include('./partials/head') %>
+    <main >
+        <%-include('./partials/navigation/nav-menu') %>
+        <%-include('./partials/flash') %>
+        <%-include('./partials/banner') %>
+        <div class="container mt-5">
+            <% if( locals.user ) { %>
+                <h5>
+                    Hello. Current user: </br></br>
+                
+                    Name: <%= locals.user.name %> </br>
+                    Surname: <%= locals.user.surname %> </br></br>
+                    Email: <%= locals.user.email %> </br></br>
+                    Algo address: <%= locals.user.algo_address %> </br></br>
+                    
+                </h5>
+            <% } else { %>
+                <div class="alert alert-primary"> Hello. you are not logged in. Please <a href="/auth/login">Login</a> </div>
+            <% } %>
+            </br></br>
+        
+    </main>
+<%-include('./partials/footer') %>
