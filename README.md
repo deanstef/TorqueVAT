@@ -1,20 +1,24 @@
-### Vat Refound App
+# TorqueVAT dApp
 
-The aim of this application is provide an automatic system using the [algorand blockchain](https://github.com/algorand) as an alternative to manage the vat payments of any tourist visiting any country.
+A decentralised VAT refunds platform for TAX-free shopping on the [Algorand blockchain](https://github.com/algorand.
 
-### Setup
+Application deployed on the Algorand TestNet.
 
-You can setup the evniroment, run the application and comunicate with the algorand testnet doing the following:
+## Requirements
+- Nodejs
+- npm
+- Mongodb
 
-- Download this repository
-- Open a terminal and `cd` inside this repository
-- Install `mongodb`, `nodejs`, `npm`
+## Installation
+
+- Clone the repository
 - Run `npm i --save` to download all the required libraries
 - Run `npm run init_db_testnet` to setup the db
-- Run `npm run server` to start the application on `localhost:4060`
+- Run `npm run server` to start the application
 
-Now you should have the running application live on port 4060 of the localhost. 
-By default 5 users with different roles are created, you can enter them with the following credentials.
+The application is accessible on `localhost:4060`.
+ 
+There are 5 default users on startup such that:
 
 | Username | Password | Role|
 | ------------- | ------------- | ------------- |
@@ -41,5 +45,4 @@ By default 5 users with different roles are created, you can enter them with the
     - refound the vat of users
 
 
-> **Credits:**   @Linch01
-
+> **Credits:** @Linch01
