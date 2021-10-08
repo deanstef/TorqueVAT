@@ -14,7 +14,7 @@
                             </form>
                             <form action="/algo/create-token/vat" method="POST" class="col-md-4">
                                 <div class="form-group mb-3">
-                                    <input class="form-control btn-primary" type="submit" value="Create VAT Coin">
+                                    <input class="form-control btn-primary" type="submit" value="Create VAT Coins">
                                 </div>
                             </form>
                         <% } %>
@@ -41,17 +41,17 @@
                     <%
                         let message;
                         let button;
-                        let select_label = "Select the User Target";
+                        let select_label = "Select the target user";
                         if( locals.user.role == "POLICE" ){
                             message = "Transfers identy tokens to toursits"; // police
                             button = "Grant Token"; // police
                         } else if( locals.user.role == "AUTHORITY" ){
-                            message = "Transfer identity tokens to merchants or vat coins"; // authority
-                            button = "Authorize"; // authority
+                            message = "Transfer identity tokens and VAT Coins"; // authority
+                            button = "Authorise"; // authority
                         } else if( locals.user.role == "CUSTOMS" ){
-                            message = "List all the vat coin transactions for a tourist and authorize the vat refound according to local conditions. If the condition is not satisfied for a transaction, the relative vat will be refounded to the merchatn ( red highlighted ).";
-                            button = "Refound Vat"; // customs
-                            select_label="Select the Tourist";
+                            message = "List all the VAT Coin transactions for a tourist and authorise the VAT refund according to local conditions. If a transaction does not satisfies the condition, the relative VAT will be refunded to the merchant (highlighted in red).";
+                            button = "Refund VAT"; // customs
+                            select_label="Select the tourist";
                         }
                     %>
                     <small class="mb-3" > <%= message %> </small>
@@ -96,7 +96,7 @@
 
                     <div class="form-group mb-3 col-md-12">
                         <% if( locals.user.role == "CUSTOMS" ) { %> 
-                            <div class="form-control btn-primary  mb-3 preview text-center" type="button" >Preview vat coin transactions</div>
+                            <div class="form-control btn-primary  mb-3 preview text-center" type="button" >Preview VAT Coin transactions</div>
                         <% } %> 
                         <input class="form-control btn-primary submit" type="submit" value="<%=button%>">
                     </div>
@@ -115,7 +115,7 @@
                                         <input type="hidden" name="tokenId" value="<%=asset.id%>">
                                     <% } %>
                                 <% } %>
-                                <input class="form-control btn-primary" type="submit" value="Unlock your wallet to allow VAT-Free Coin Transaction">
+                                <input class="form-control btn-primary" type="submit" value="Unlock your wallet to allow VAT Coin transactions">
                             </div>
                         </form>
                     <% } %>
@@ -130,7 +130,7 @@
                                         <input type="hidden" name="tokenId" value="<%=asset.id%>">
                                     <% } %>
                                 <% } %>
-                                <input class="form-control btn-primary" type="submit" value="Become a VAT-Free Privileged Tourist ">
+                                <input class="form-control btn-primary" type="submit" value="Become a VAT Coin privileged tourist ">
                             </div>
                         </form>
                         <% } %>
@@ -152,7 +152,7 @@
                                 <% } %>
                             <% } %>
                             <div class="form-group mb-3 col-md-6">
-                                <input class="form-control btn-primary" type="submit" value="Buy VAT-Free Coin">
+                                <input class="form-control btn-primary" type="submit" value="Buy VAT Coins">
                             </div>
                         </form>
                         
@@ -166,7 +166,7 @@
                                         <input type="hidden" name="tokenId" value="<%=asset.id%>">
                                     <% } %>
                                 <% } %>
-                                <input class="form-control btn-primary" type="submit" value="Become a VAT-Free Retailer">
+                                <input class="form-control btn-primary" type="submit" value="Become a VAT Coin merchant">
                             </div>
                         </form>
                     <% } %>
@@ -183,7 +183,7 @@
                             <input class="form-control" type="number" name="amount" placeholder="Amount" step="0.01" min="150">
                         </div>
                         <div class="form-group mb-3 col-md-4">
-                            <label class="form-label" for="toAddress">Select the reciver user</label>
+                            <label class="form-label" for="toAddress">Select the receiver user</label>
                             <select class="form-control" name="toAddress" id="toAddress">
                                 <% for( let list_user of locals.users ) { %>
                                     <% if( list_user.role == "MERCHANT" ) { %>
@@ -202,21 +202,18 @@
 
                         <div class="form-group mb-3 col-md-4">
                             <label class="form-label" for="toAddress"></br></label>
-                            <input class="form-control btn-primary" type="submit" value="Pay Merchant">
+                            <input class="form-control btn-primary" type="submit" value="Pay merchant">
                         </div>
                     </form>
                 </div>
-                <h5 class="mb-3 mt-5">End your travel</h5>
+                <h5 class="mb-3 mt-5">End your journey</h5>
                
                 <div class="row">
-                    <div class="col-lg-6">
-                        <p>Submit a request to collect your payed vat percentage amount</p>
-                    </div>
-                    <div class="col-lg-6">
+                    
+                    
                         <form action="/apply/end" method="POST" class="col-md-12">
-                            <input class="form-control btn-primary" type="submit" value="End your journey">
+                            <input class="form-control btn-primary" type="submit" value="Claim your VAT">
                         </form>
-                    </div>
                     
                 </div>
                 <% } %>
@@ -228,9 +225,9 @@
                         <tr>
                             <th scope="col">Transaction</th>
                             <th scope="col">Sender</th>
-                            <th scope="col">Reciver</th>
+                            <th scope="col">Receiver</th>
                             <th scope="col">Amount</th>
-                            <th scope="col">Refounding</th>
+                            <th scope="col">Refunding</th>
                         </tr>
                     </thead>
                     <tbody>

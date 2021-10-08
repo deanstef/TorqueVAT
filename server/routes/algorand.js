@@ -24,7 +24,7 @@ async (req, res, next) => {
   let Asset = new AlgoAsset({ id: address_id, type: "ASSET_TOURIST", decimals: 0 });
   await Asset.save();
 
-  let successObj = [{param: "Asset", msg: `Succesfully created`}];
+  let successObj = [{param: "Asset", msg: `Successfully created`}];
   req.flash('success', JSON.stringify(successObj));
   res.redirect('/dashboard');
 });
@@ -39,7 +39,7 @@ async (req, res, next) => {
   let Asset = new AlgoAsset({ id: address_id, type: "ASSET_MERCHANT", decimals: 0 });
   await Asset.save();
 
-  let successObj = [{param: "Asset", msg: `Succesfully created`}];
+  let successObj = [{param: "Asset", msg: `Successfully created`}];
   req.flash('success', JSON.stringify(successObj));
 
   res.redirect('/dashboard');
@@ -54,7 +54,7 @@ async (req, res, next) => {
   let Asset = new AlgoAsset({ id: address_id, type: "ASSET_VAT", decimals: 2 });
   await Asset.save();
 
-  let successObj = [{param: "Asset", msg: `Succesfully created`}];
+  let successObj = [{param: "Asset", msg: `Successfully created`}];
   req.flash('success', JSON.stringify(successObj));
 
   res.redirect('/dashboard');
@@ -73,7 +73,7 @@ async (req, res, next) => {
     await newApplication.save();
   }
 
-  let successObj = [{param: "Opt in", msg: `Succesfully opted in`}];
+  let successObj = [{param: "Opt in", msg: `Successfully opted in`}];
   req.flash('success', JSON.stringify(successObj));
 
   res.redirect('/dashboard');
@@ -93,7 +93,7 @@ async (req, res, next) => {
 
   await algo.transfer_asset( account, toAddress, note, amount, token_id );
 
-  let successObj = [{param: "Transfer", msg: `Succesfully transferred`}];
+  let successObj = [{param: "Transfer", msg: `Successfully transferred`}];
   req.flash('success', JSON.stringify(successObj));
 
   res.redirect('/dashboard');
@@ -111,7 +111,7 @@ async (req, res, next) => {
 
   await algo.freeze_address( account, toAddress, note, freezeState, token_id );
 
-  let successObj = [{param: "Freeze", msg: `Succesfully freezed`}];
+  let successObj = [{param: "Freeze", msg: `Successfully freezed`}];
   req.flash('success', JSON.stringify(successObj));
 
   res.redirect('/dashboard');
@@ -144,7 +144,7 @@ async (req, res, next) => {
   let updated = await Application.findByIdAndUpdate( applicationId, { $set: { completed: true } } );
   console.log( updated );
 
-  let successObj = [{param: "Transfer", msg: `Succesfully transferred`}];
+  let successObj = [{param: "Transfer", msg: `Successfully transferred`}];
   req.flash('success', JSON.stringify(successObj));
 
   res.redirect('/dashboard');
@@ -158,7 +158,7 @@ async (req, res, next) => {
   await algo.clawback_logic_signature( parseInt( escrow_amount ), process.env.ESCROW_ADD, process.env.AUTHORITY_ADD, parseInt(process.env.ASSET_VAT) );
 
 
-  let successObj = [{param: "Transfer", msg: `Succesfully cleared escrow`}];
+  let successObj = [{param: "Transfer", msg: `Escrow successfully cleared`}];
   req.flash('success', JSON.stringify(successObj));
 
   res.redirect('/dashboard');
@@ -203,7 +203,7 @@ async (req, res, next) => {
     ESCROW_ACCOUNT
   );
 
-  let successObj = [{param: "Payment", msg: `Succesfull`}];
+  let successObj = [{param: "Payment", msg: `Successful`}];
   req.flash('success', JSON.stringify(successObj));
 
   res.redirect('/dashboard');
@@ -317,7 +317,7 @@ async (req, res, next) => {
 
   let successObj = [{
     param: "Success", 
-    msg: `Refounded ${utils.addAlgoAssetDecimals( refounded_total, process.env.ASSET_VAT_DECIMALS )} VAT Coinst to Tourist and ${utils.addAlgoAssetDecimals( not_refounded_total, process.env.ASSET_VAT_DECIMALS )} Coins to Merchants`
+    msg: `Refunded ${utils.addAlgoAssetDecimals( refounded_total, process.env.ASSET_VAT_DECIMALS )} VAT Coins to tourist and ${utils.addAlgoAssetDecimals( not_refounded_total, process.env.ASSET_VAT_DECIMALS )} VAT Coins to merchant(s)`
   }];
 
   req.flash('success', JSON.stringify(successObj));

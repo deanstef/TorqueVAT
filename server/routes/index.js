@@ -31,7 +31,7 @@ async (req, res, next) => {
   let newApplication = new Application({ amount: amount, tokenId: token_id, owner: req.user._id });
   await newApplication.save();
 
-  let successObj = [{param: "Application", msg: `Succesfully sent the request`}];
+  let successObj = [{param: "Application", msg: `Request successfully sent`}];
   req.flash('success', JSON.stringify(successObj));
 
   res.redirect('/dashboard');
@@ -55,7 +55,7 @@ async (req, res, next) => {
   });
   await newApplication.save();
 
-  let successObj = [{param: "Application", msg: `Succesfully sent the request`}];
+  let successObj = [{param: "Application", msg: `Request successfully sent`}];
   req.flash('success', JSON.stringify(successObj));
   res.redirect('/dashboard');
 });
