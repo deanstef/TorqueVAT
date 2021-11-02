@@ -1,6 +1,6 @@
 # TorqueVAT dApp
 
-A decentralised VAT refunds platform for TAX-free shopping on the [Algorand blockchain](https://github.com/algorand.
+A decentralised VAT refunds platform for TAX-free shopping on the [Algorand blockchain](https://github.com/algorand).
 
 Application deployed on the Algorand TestNet.
 
