@@ -1,0 +1,45 @@
+VAT APP ASC1 Deployment Steps
+
+1. Compile Tourist Escrow Contract and keep note of the generated account
+2. Found the Escrow Contract Account with some Algos
+3. Opt-in Transaction from The Escrow Contract Account for the VAT Coin ASA
+
+AT Payment Transaction
+
+1. Tourist Account AppCall Transaction: 
+./goal app call --app-id 24248443 --from VB4OBNW626ZTZYRZVPRB6CAPKXBINMRUCWHAGAAI6B3TJPKFIVBPUEEFRY --app-account QLLBH6PS7WPKECGS37YWKFGW4LUJB2WME5NP47KVUFRAX7ATK55D4GSLMU --app-arg "str:AsaAmountEq" --app-arg "int:1" --foreign-asset 28244470 -o vat_at/unsigned_asacheck1.txn
+
+2. Merchant Account AppCall Transaction: 
+./goal app call --app-id 24248443 --from VB4OBNW626ZTZYRZVPRB6CAPKXBINMRUCWHAGAAI6B3TJPKFIVBPUEEFRY --app-account PYQZHXW7I5TKUU535PCH5HYL435CJ32LN7ET3ZV432YMMJN3LWZMWQZZ6A --app-arg "str:AsaAmountEq" --app-arg "int:1" --foreign-asset 28244597 -o vat_at/unsigned_asacheck2.txn -d testnetdata/
+
+3. AssetRevoke Toursit - Merchant
+./goal asset send -a 200 --assetid 28244699 -f QLLBH6PS7WPKECGS37YWKFGW4LUJB2WME5NP47KVUFRAX7ATK55D4GSLMU -t PYQZHXW7I5TKUU535PCH5HYL435CJ32LN7ET3ZV432YMMJN3LWZMWQZZ6A --clawback VB4OBNW626ZTZYRZVPRB6CAPKXBINMRUCWHAGAAI6B3TJPKFIVBPUEEFRY --creator NAX6DPT66VH44JLIQXHLI7PS63FIYGJCOPKTF77CI2TFEZJDUSQRUGIFMY -d testnetdata/ -o vat_at/unsigned_payment.txn
+
+4. AssetRevoke Merchant - Escrow
+./goal asset send -a 40 --assetid 28244699 -f PYQZHXW7I5TKUU535PCH5HYL435CJ32LN7ET3ZV432YMMJN3LWZMWQZZ6A -t TTMW55E765Z3NJNYR6VYU3IF2HGXWSVG4THQNNDSK2JMMZK5SX6VPTFEFE --clawback VB4OBNW626ZTZYRZVPRB6CAPKXBINMRUCWHAGAAI6B3TJPKFIVBPUEEFRY --creator NAX6DPT66VH44JLIQXHLI7PS63FIYGJCOPKTF77CI2TFEZJDUSQRUGIFMY -d testnetdata/ -o vat_at/unsigned_vat_deposit.txn
+
+5. Atomically group the unsigned transactions
+cat unsigned_asacheck1.txn unsigned_asacheck2.txn unsigned_payment.txn unsigned_vat_deposit.txn > combinedtransactions.txn
+./goal clerk group -i vat_at/combinedtransactions.txn -o vat_at/groupedtransactions.txn
+./goal clerk split -i vat_at/groupedtransactions.txn -o vat_at/split.txn
+
+6. Sign each transaction individually with the ASC1
+./goal clerk sign -i vat_at/split-0.txn -p vat_app/vat_contract_account.teal -o vat_at/signed-0.txn
+./goal clerk sign -i vat_at/split-1.txn -p vat_app/vat_contract_account.teal -o vat_at/signed-1.txn
+./goal clerk sign -i vat_at/split-2.txn -p vat_app/vat_contract_account.teal -o vat_at/signed-2.txn
+./goal clerk sign -i vat_at/split-3.txn -p vat_app/vat_contract_account.teal -o vat_at/signed-3.txn
+
+7. Concat all the signed txns
+cd vat_at
+cat signed-0.txn signed-1.txn signed-2.txn signed-3.txn > signed_at.sgtxn
+
+DEBUG
+./goal clerk dryrun -t vat_at/signed_at.sgtxn --dryrun-dump -o vat_at/dr.msgp -d testnetdata/
+./tealdbg debug vat_app/vat_contract_account.teal -d vat_at/dr.msgp --group-index 0
+
+EXEC
+./goal clerk rawsend -f signed_at.sgtxn
+
+
+VAT Refund Transaction (from Escrow to Tourist or Merchant)
+./goal asset send -a 40 --assetid 28244699 -f TTMW55E765Z3NJNYR6VYU3IF2HGXWSVG4THQNNDSK2JMMZK5SX6VPTFEFE -t QLLBH6PS7WPKECGS37YWKFGW4LUJB2WME5NP47KVUFRAX7ATK55D4GSLMU --clawback VB4OBNW626ZTZYRZVPRB6CAPKXBINMRUCWHAGAAI6B3TJPKFIVBPUEEFRY --creator NAX6DPT66VH44JLIQXHLI7PS63FIYGJCOPKTF77CI2TFEZJDUSQRUGIFMY -d testnetdata/ -o vat_at/unsigned_refund.txn
